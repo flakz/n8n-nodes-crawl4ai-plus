@@ -239,6 +239,15 @@ export class Crawl4aiClient {
     }
   }
 
+  async getLlmJobStatus(taskId: string): Promise<JobStatusResponse> {
+    try {
+      const response = await this.apiClient.get(`/llm/job/${taskId}`);
+      return response.data as JobStatusResponse;
+    } catch (error) {
+      throw new Error(this.parseApiError(error));
+    }
+  }
+
   /**
    * Get server health — GET /monitor/health
    */

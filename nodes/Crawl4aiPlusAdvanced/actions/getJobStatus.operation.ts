@@ -13,6 +13,23 @@ import { formatCrawlResult } from '../helpers/formatters';
 // --- UI Definition ---
 export const description: INodeProperties[] = [
 	{
+		displayName: 'Job Type',
+		name: 'jobType',
+		type: 'options',
+		options: [
+			{ name: 'Crawl Job', value: 'crawl' },
+			{ name: 'LLM Job', value: 'llm' },
+		],
+		required: true,
+		default: 'crawl',
+		description: 'Type of async job to check status for',
+		displayOptions: {
+			show: {
+				operation: ['getJobStatus'],
+			},
+		},
+	},
+	{
 		displayName: 'Task ID',
 		name: 'taskId',
 		type: 'string',
@@ -41,11 +58,15 @@ export async function execute(
 	for (let i = 0; i < items.length; i++) {
 		try {
 			const taskId = this.getNodeParameter('taskId', i, '') as string;
+			const jobType = this.getNodeParameter('jobType', i, 'crawl') as 'crawl' | 'llm';
 
 			if (!taskId || !taskId.trim()) {
 				throw new NodeOperationError(this.getNode(), 'Task ID cannot be empty.', { itemIndex: i });
 			}
-			const statusResponse = await crawler.getJobStatus(taskId.trim());
+
+			const statusResponse = jobType === 'llm'
+				? await crawler.getLlmJobStatus(taskId.trim())
+				: await crawler.getJobStatus(taskId.trim());
 			const checkedAt = new Date().toISOString();
 
 			// If completed and result data available, format the crawl results
