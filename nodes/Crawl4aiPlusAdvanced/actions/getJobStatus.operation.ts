@@ -10,6 +10,14 @@ import type { Crawl4aiNodeOptions, CrawlResult } from '../helpers/interfaces';
 import { getCrawl4aiClient } from '../../shared/utils';
 import { formatCrawlResult } from '../helpers/formatters';
 
+// LLM job result item (from /llm/job endpoint)
+interface LlmJobResultItem {
+	index: number;
+	tags: string[];
+	content: string[];
+	error: boolean;
+}
+
 // --- UI Definition ---
 export const description: INodeProperties[] = [
 	{
@@ -71,44 +79,74 @@ export async function execute(
 
 			// If completed and result data available, format the crawl results
 			if (statusResponse.status === 'completed' && statusResponse.result) {
-				const rawResults = Array.isArray(statusResponse.result)
-					? statusResponse.result as CrawlResult[]
-					: [statusResponse.result as CrawlResult];
+				// Handle LLM job results differently (they have tags/content structure)
+				if (jobType === 'llm') {
+					const llmResults = Array.isArray(statusResponse.result)
+						? statusResponse.result as unknown as LlmJobResultItem[]
+						: [statusResponse.result as unknown as LlmJobResultItem];
 
-				if (rawResults.length > 0) {
-					for (const result of rawResults) {
-						const formatted = formatCrawlResult(result, {
-							includeLinks: true,
-							includeScreenshot: true,
-							includePdf: true,
-							includeSslCertificate: true,
-							includeTables: true,
-							includeMedia: true,
-							includeHtml: true,
-							extractionStrategy: result.extracted_content ? 'unknown' : undefined,
-							fetchedAt: checkedAt,
-						});
-						allResults.push({
-							json: {
-								...formatted,
-								taskId: statusResponse.task_id,
-								status: statusResponse.status,
-								checkedAt,
-							} as IDataObject,
-							pairedItem: { item: i },
-						});
+					// Convert LLM results to a keyed object
+					const extracted: Record<string, string[]> = {};
+					for (const item of llmResults) {
+						if (!item.error && item.tags && item.content) {
+							for (const tag of item.tags) {
+								extracted[tag] = item.content;
+							}
+						}
 					}
-				} else {
-					// Job completed but returned empty results
+
 					allResults.push({
 						json: {
 							taskId: statusResponse.task_id,
 							status: statusResponse.status,
+							url: (statusResponse as unknown as { url?: string }).url,
+							extracted,
+							raw: llmResults,
 							checkedAt,
-							message: 'Job completed but returned no results.',
 						} as IDataObject,
 						pairedItem: { item: i },
 					});
+				} else {
+					// Crawl job - use existing formatCrawlResult
+					const rawResults = Array.isArray(statusResponse.result)
+						? statusResponse.result as CrawlResult[]
+						: [statusResponse.result as CrawlResult];
+
+					if (rawResults.length > 0) {
+						for (const result of rawResults) {
+							const formatted = formatCrawlResult(result, {
+								includeLinks: true,
+								includeScreenshot: true,
+								includePdf: true,
+								includeSslCertificate: true,
+								includeTables: true,
+								includeMedia: true,
+								includeHtml: true,
+								extractionStrategy: result.extracted_content ? 'unknown' : undefined,
+								fetchedAt: checkedAt,
+							});
+							allResults.push({
+								json: {
+									...formatted,
+									taskId: statusResponse.task_id,
+									status: statusResponse.status,
+									checkedAt,
+								} as IDataObject,
+								pairedItem: { item: i },
+							});
+						}
+					} else {
+						// Job completed but returned empty results
+						allResults.push({
+							json: {
+								taskId: statusResponse.task_id,
+								status: statusResponse.status,
+								checkedAt,
+								message: 'Job completed but returned no results.',
+							} as IDataObject,
+							pairedItem: { item: i },
+						});
+					}
 				}
 			} else {
 				allResults.push({
