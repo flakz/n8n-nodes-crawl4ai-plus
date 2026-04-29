@@ -112,22 +112,23 @@ export async function execute(
 				throw new NodeOperationError(this.getNode(), (err as Error).message, { itemIndex: i });
 			}
 
-			// Build provider — use override if provided, else fall back to credentials
-			let provider: string | undefined;
-			if (llmOptions.providerOverride && String(llmOptions.providerOverride).trim()) {
-				provider = String(llmOptions.providerOverride).trim();
-			} else if (credentials.enableLlm) {
-				const llmCfg = buildLlmConfig(credentials);
-				provider = llmCfg.provider;
-			}
+			// Build provider, api_key, and base_url — use override if provided, else fall back to credentials
+			const llmCfg = buildLlmConfig(credentials);
+			const provider = llmCfg.provider;
+			const apiToken: string | undefined = llmCfg.apiKey;
+			const baseUrl: string | undefined = llmCfg.baseUrl;
+			const providerOverride = llmOptions.providerOverride && String(llmOptions.providerOverride).trim()
+				? String(llmOptions.providerOverride).trim()
+				: provider;
 
-			// Build webhook config if URL provided
 			const webhookConfig = buildWebhookConfig(webhookConfigOptions);
 
 			const taskId = await crawler.submitLlmJob({
 				url: url.trim(),
 				q: query.trim(),
-				...(provider ? { provider } : {}),
+				...(providerOverride ? { provider: providerOverride } : {}),
+				...(apiToken ? { api_token: apiToken } : {}),
+				...(baseUrl ? { base_url: baseUrl } : {}),
 				...(llmOptions.temperature !== undefined && llmOptions.temperature !== '' ? { temperature: Number(llmOptions.temperature) } : {}),
 				...(webhookConfig ? { webhook_config: webhookConfig } : {}),
 			});

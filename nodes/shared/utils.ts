@@ -613,6 +613,11 @@ export function buildLlmConfig(credentials: Crawl4aiApiCredentials): LlmConfigRe
     provider = `ollama/${model}`;
     baseUrl = credentials.ollamaUrl || 'http://localhost:11434';
     // Ollama doesn't require API key
+  } else if (credentials.llmProvider === 'openrouter') {
+    const model = credentials.llmModel || 'anthropic/claude-3-haiku-20240307';
+    provider = model.startsWith('openrouter/') ? model : `openrouter/${model}`;
+    apiKey = credentials.apiKey || '';
+    baseUrl = credentials.ollamaUrl || 'https://openrouter.ai/api/v1';
   } else if (credentials.llmProvider === 'other') {
     provider = credentials.customProvider || 'custom/model';
     apiKey = credentials.customApiKey || '';

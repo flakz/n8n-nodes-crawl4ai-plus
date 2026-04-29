@@ -232,7 +232,7 @@ export class Crawl4aiClient {
    */
   async getJobStatus(taskId: string): Promise<JobStatusResponse> {
     try {
-      const response = await this.apiClient.get(`/job/${taskId}`);
+      const response = await this.apiClient.get(`/crawl/job/${taskId}`);
       return response.data as JobStatusResponse;
     } catch (error) {
       throw new Error(this.parseApiError(error));
