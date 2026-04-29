@@ -121,6 +121,10 @@ export class Crawl4aiApi implements ICredentialType {
 					value: 'openrouter',
 				},
 				{
+					name: 'OpenCode',
+					value: 'opencode',
+				},
+				{
 					name: 'LiteLLM / Custom',
 					value: 'other',
 				},
@@ -143,7 +147,7 @@ export class Crawl4aiApi implements ICredentialType {
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter'],
+					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter', 'opencode'],
 				},
 			},
 		},
@@ -173,7 +177,7 @@ export class Crawl4aiApi implements ICredentialType {
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter'],
+					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter', 'opencode'],
 				},
 			},
 		},

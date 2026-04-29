@@ -618,6 +618,11 @@ export function buildLlmConfig(credentials: Crawl4aiApiCredentials): LlmConfigRe
     provider = model.startsWith('openrouter/') ? model : `openrouter/${model}`;
     apiKey = credentials.apiKey || '';
     baseUrl = credentials.ollamaUrl || 'https://openrouter.ai/api/v1';
+  } else if (credentials.llmProvider === 'opencode') {
+    const model = credentials.llmModel || 'minimax-m2.5-free';
+    provider = model.startsWith('opencode/') ? model : `opencode/${model}`;
+    apiKey = credentials.apiKey || '';
+    baseUrl = credentials.ollamaUrl || 'https://opencode.ai/zen/v1';
   } else if (credentials.llmProvider === 'other') {
     provider = credentials.customProvider || 'custom/model';
     apiKey = credentials.customApiKey || '';
