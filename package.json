@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-crawl4ai-plus",
+  "name": "n8n-nodes-crawl4ai-fixed",
   "version": "5.1.1",
   "description": "n8n nodes for Crawl4AI v0.8.0 web crawler and data extraction with enhanced features",
   "keywords": [
