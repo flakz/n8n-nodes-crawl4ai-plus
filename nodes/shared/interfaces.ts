@@ -286,8 +286,9 @@ export interface CrawlJobRequest {
 export interface JobStatusResponse {
 	task_id: string;
 	status: 'pending' | 'processing' | 'completed' | 'failed';
-	result?: CrawlResult | CrawlResult[];
+	result?: unknown; // Can be CrawlResult[] or LLM result[]
 	message?: string;
+	url?: string;
 }
 
 // Monitor health response (GET /monitor/health)

@@ -99,7 +99,7 @@ export async function execute(
 						json: {
 							taskId: statusResponse.task_id,
 							status: statusResponse.status,
-							url: (statusResponse as unknown as { url?: string }).url,
+							url: statusResponse.url,
 							extracted,
 							raw: llmResults,
 							checkedAt,
