@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.2.2
+
+### Changed
+
+- **README**: Added "What's New" section at top for npm visibility
+
 ## 5.2.1
 
 ### Changed

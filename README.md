@@ -2,6 +2,28 @@
 
 > **Enhanced fork** targeting Crawl4AI v0.8.0 with a progressive-disclosure two-node architecture: a Simple node (4 operations) for general users and an Advanced node (15 operations) for power users.
 
+---
+
+## What's New in v5.2.x
+
+### v5.2.1 — README & documentation update
+- Documented the new Custom (OpenAI-Compatible) provider setup (see below)
+
+### v5.2.0 — Fix broken custom LLM providers
+- **Replaced** broken `opencode` and `LiteLLM/Custom` provider options with a single **Custom (OpenAI-Compatible)** option that works with any OpenAI-compatible API
+- **Fixed** OpenRouter base URL bug (was incorrectly using Ollama's URL)
+- **Works with**: LLM7, OpenCode, Together AI, Fireworks, self-hosted models, or any OpenAI-compatible endpoint
+
+#### How to set up a Custom provider
+1. Set **LLM Provider** → **Custom (OpenAI-Compatible)**
+2. Enter your **Base URL** (e.g. `https://api.llm7.ai/v1`)
+3. Enter your **Model Name** (e.g. `mistral-7b`)
+4. Enter your **API Key** (optional)
+
+> **Why this works**: Crawl4AI's Docker uses [litellm](https://github.com/BerriAI/litellm) internally. litellm rejects unknown provider prefixes (`opencode/`, `llm7/`), but its `openai/` prefix + custom `base_url` routes requests to any compatible endpoint. See [CHANGELOG.md](CHANGELOG.md) for full details.
+
+---
+
 ## Project History & Attribution
 
 This is a maintained fork with enhanced features for Crawl4AI 0.8.0.
