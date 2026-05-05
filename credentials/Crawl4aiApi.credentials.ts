@@ -105,28 +105,25 @@ export class Crawl4aiApi implements ICredentialType {
 					value: 'openai',
 				},
 				{
-					name: 'Ollama',
-					value: 'ollama',
+					name: 'Anthropic',
+					value: 'anthropic',
 				},
 				{
 					name: 'Groq',
 					value: 'groq',
 				},
 				{
-					name: 'Anthropic',
-					value: 'anthropic',
+					name: 'Ollama',
+					value: 'ollama',
 				},
 				{
 					name: 'OpenRouter',
 					value: 'openrouter',
 				},
 				{
-					name: 'OpenCode',
-					value: 'opencode',
-				},
-				{
-					name: 'LiteLLM / Custom',
-					value: 'other',
+					name: 'Custom (OpenAI-Compatible)',
+					value: 'custom',
+					description: 'Any OpenAI-compatible API (LLM7, OpenCode, Together, Fireworks, etc.)',
 				},
 			],
 			default: 'openai',
@@ -147,7 +144,7 @@ export class Crawl4aiApi implements ICredentialType {
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter', 'opencode'],
+					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter'],
 				},
 			},
 		},
@@ -177,7 +174,7 @@ export class Crawl4aiApi implements ICredentialType {
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter', 'opencode'],
+					llmProvider: ['openai', 'groq', 'anthropic', 'openrouter'],
 				},
 			},
 		},
@@ -194,47 +191,50 @@ export class Crawl4aiApi implements ICredentialType {
 				},
 			},
 		},
+		// Custom (OpenAI-Compatible) provider fields
 		{
-			displayName: 'Custom Provider',
-			name: 'customProvider',
-			type: 'string',
-			default: '',
-			placeholder: 'custom/llama-3-70b or provider/model',
-			description: 'The custom provider in format "provider/model". Use "custom/" prefix for external LiteLLM proxies or custom endpoints (e.g., custom/llama-3-70b)',
-			displayOptions: {
-				show: {
-					enableLlm: [true],
-					llmProvider: ['other'],
-				},
-			},
-		},
-		{
-			displayName: 'Custom Base URL',
+			displayName: 'Base URL',
 			name: 'customBaseUrl',
 			type: 'string',
+			required: true,
 			default: '',
-			placeholder: 'https://litellm-proxy.company.com/v1',
-			description: 'The base URL for your custom LLM provider, external LiteLLM proxy server, or custom inference endpoint. Required for external providers.',
+			placeholder: 'https://api.llm7.ai/v1',
+			description: 'The OpenAI-compatible API endpoint URL (e.g. https://api.llm7.ai/v1, https://opencode.ai/zen/v1)',
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['other'],
+					llmProvider: ['custom'],
 				},
 			},
 		},
 		{
-			displayName: 'Custom Provider API Key',
+			displayName: 'Model Name',
+			name: 'customModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'mistral-7b',
+			description: 'The model identifier to use (sent as-is to the API)',
+			displayOptions: {
+				show: {
+					enableLlm: [true],
+					llmProvider: ['custom'],
+				},
+			},
+		},
+		{
+			displayName: 'API Key',
 			name: 'customApiKey',
 			type: 'string',
 			typeOptions: {
 				password: true,
 			},
 			default: '',
-			description: 'The API key for the custom provider or LiteLLM proxy server',
+			description: 'The API key for the custom provider (leave empty if not required)',
 			displayOptions: {
 				show: {
 					enableLlm: [true],
-					llmProvider: ['other'],
+					llmProvider: ['custom'],
 				},
 			},
 		},

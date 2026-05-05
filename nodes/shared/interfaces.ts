@@ -15,7 +15,7 @@ export interface Crawl4aiApiCredentials {
 	apiKey?: string;
 	ollamaUrl?: string;
 	ollamaModel?: string;
-	customProvider?: string;
+	customModel?: string;
 	customBaseUrl?: string;
 	customApiKey?: string;
 }

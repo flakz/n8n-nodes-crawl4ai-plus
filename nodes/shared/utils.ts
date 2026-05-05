@@ -612,19 +612,16 @@ export function buildLlmConfig(credentials: Crawl4aiApiCredentials): LlmConfigRe
     const model = credentials.ollamaModel || 'llama3';
     provider = `ollama/${model}`;
     baseUrl = credentials.ollamaUrl || 'http://localhost:11434';
-    // Ollama doesn't require API key
   } else if (credentials.llmProvider === 'openrouter') {
     const model = credentials.llmModel || 'anthropic/claude-3-haiku-20240307';
-    provider = model.startsWith('openrouter/') ? model : `openrouter/${model}`;
+    provider = `openrouter/${model}`;
     apiKey = credentials.apiKey || '';
-    baseUrl = credentials.ollamaUrl || 'https://openrouter.ai/api/v1';
-  } else if (credentials.llmProvider === 'opencode') {
-    const model = credentials.llmModel || 'minimax-m2.5-free';
-    provider = model.startsWith('opencode/') ? model : `opencode/${model}`;
-    apiKey = credentials.apiKey || '';
-    baseUrl = credentials.ollamaUrl || 'https://opencode.ai/zen/v1';
-  } else if (credentials.llmProvider === 'other') {
-    provider = credentials.customProvider || 'custom/model';
+    baseUrl = 'https://openrouter.ai/api/v1';
+  } else if (credentials.llmProvider === 'custom') {
+    // Use openai/ prefix so litellm routes to the custom base_url without provider validation.
+    // Works with any OpenAI-compatible API (LLM7, OpenCode, Together, Fireworks, etc.)
+    const model = credentials.customModel || 'model';
+    provider = `openai/${model}`;
     apiKey = credentials.customApiKey || '';
     baseUrl = credentials.customBaseUrl || undefined;
   }
@@ -660,11 +657,19 @@ export function validateLlmCredentials(credentials: Crawl4aiApiCredentials, cont
     );
   }
 
-  // Validate API key for non-Ollama providers
+  // Custom provider requires a base URL
+  if (credentials.llmProvider === 'custom' && !credentials.customBaseUrl) {
+    throw new Error(
+      `Base URL is required for custom OpenAI-compatible provider. Please configure it in the Crawl4AI credentials.`
+    );
+  }
+
+  // Validate API key for providers that need one (Ollama and custom-without-key are exempt)
   if (credentials.llmProvider !== 'ollama') {
     let apiKey = '';
-    if (credentials.llmProvider === 'other') {
-      apiKey = credentials.customApiKey || '';
+    if (credentials.llmProvider === 'custom') {
+      // Custom provider API key is optional
+      return;
     } else {
       apiKey = credentials.apiKey || '';
     }
