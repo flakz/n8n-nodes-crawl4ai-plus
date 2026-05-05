@@ -94,7 +94,19 @@ Then restart your n8n instance. The nodes are declared in `package.json → "n8n
    - **Docker URL** — URL of your Crawl4AI container (default: `http://crawl4ai:11235`)
    - **Authentication** — Defaults to **No Authentication**, which is correct for a standard Docker quickstart deployment. Switch to Token or Basic auth only if your Crawl4AI instance is configured with authentication.
    - **LLM Settings** — Enable and configure a provider for AI-powered operations:
-     - OpenAI, Anthropic, Groq, Ollama, or custom LiteLLM endpoint
+     - OpenAI, Anthropic, Groq, Ollama, OpenRouter, or **Custom (OpenAI-Compatible)** for any OpenAI-compatible API (LLM7, OpenCode, Together, Fireworks, etc.)
+
+#### Custom (OpenAI-Compatible) Provider
+
+The **Custom** provider option works with any API that implements the OpenAI chat completions format. This is useful for services like LLM7, OpenCode, Together AI, Fireworks AI, or self-hosted models behind a compatible proxy.
+
+To configure:
+1. Set **LLM Provider** to **Custom (OpenAI-Compatible)**
+2. Enter the **Base URL** — the full API endpoint (e.g. `https://api.llm7.ai/v1`, `https://opencode.ai/zen/v1`)
+3. Enter the **Model Name** — the model identifier your API expects (e.g. `mistral-7b`)
+4. Enter the **API Key** (optional — leave empty if the API doesn't require one)
+
+> **How it works**: Crawl4AI's Docker container uses [litellm](https://github.com/BerriAI/litellm) internally for LLM routing. The Custom option uses litellm's `openai/` provider prefix with a custom `base_url`, which routes requests to your endpoint instead of `api.openai.com`. This is litellm's designed-in mechanism for supporting arbitrary OpenAI-compatible APIs.
 
 ### Simple Node
 
